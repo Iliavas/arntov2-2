@@ -85,34 +85,34 @@ imageTrackerGroup
 // Load a 3D model to place within our group (using ThreeJS's GLTF loader)
 const gltfLoader = new GLTFLoader(manager);
 gltfLoader.load(model, (gltf) => {
-  const material = new THREE.MeshStandardMaterial({
+  const base_model_color = new THREE.MeshStandardMaterial({
     color: 0xffffff,
     emissive: 0.2
   });
-  const redMaterial = new THREE.MeshStandardMaterial({
+  const active_model_color = new THREE.MeshStandardMaterial({
     color: 0x00FF19
   })
   gltf.scene.visible = false;
   for (var i = 3; i < 26; ++i) {
-    (gltf.scene.children[i] as THREE.Mesh).material = material;
+    (gltf.scene.children[i] as THREE.Mesh).material = base_model_color;
   }
   console.log(gltf.scene.children)
-  const a = new Event1<ZapparThree.ImageAnchor>();
-  a.bind(() => {
+  const enable_scene_event = new Event1<ZapparThree.ImageAnchor>();
+  enable_scene_event.bind(() => {
     gltf.scene.visible = true;
   })
-  const b = new Event1<ZapparThree.ImageAnchor>();
-  b.bind(() => {
+  const disable_scene_event = new Event1<ZapparThree.ImageAnchor>();
+  disable_scene_event.bind(() => {
     gltf.scene.visible = false;
   })
-  imageTracker.onVisible = a;
-  imageTracker.onNotVisible = b;
+  imageTracker.onVisible = enable_scene_event;
+  imageTracker.onNotVisible = disable_scene_event;
   // get the animation and re-declare mixer and action.
   // which will then be triggered on button press
   mixer = new THREE.AnimationMixer(gltf.scene);
   funcAction = () => {
     for (var i = 3; i < 26; ++i) {
-      (gltf.scene.children[i] as THREE.Mesh).material = !pushed ? redMaterial : material; 
+      (gltf.scene.children[i] as THREE.Mesh).material = !pushed ? active_model_color : base_model_color; 
     }
     pushed = !pushed;
   }
