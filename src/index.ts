@@ -8,9 +8,8 @@ import * as ZapparThree from '@zappar/zappar-threejs';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import model from '../assets/girland.glb';
-import target from '../assets/example-tracking-image.zpt';
+import target from '../assets/image.zpt';
 import './index.sass';
-import { Vector3 } from 'three';
 import { Event1 } from '@zappar/zappar';
 
 // The SDK is supported on many different browsers, but there are some that
