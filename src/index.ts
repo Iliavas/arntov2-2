@@ -90,12 +90,13 @@ gltfLoader.load(model, (gltf) => {
     emissive: 0.2
   });
   const redMaterial = new THREE.MeshStandardMaterial({
-    color: 0xFF0C14
+    color: 0x00FF19
   })
   gltf.scene.visible = false;
-  for (var i = 2; i < 29; ++i) {
+  for (var i = 3; i < 26; ++i) {
     (gltf.scene.children[i] as THREE.Mesh).material = material;
   }
+  console.log(gltf.scene.children)
   const a = new Event1<ZapparThree.ImageAnchor>();
   a.bind(() => {
     gltf.scene.visible = true;
@@ -110,7 +111,7 @@ gltfLoader.load(model, (gltf) => {
   // which will then be triggered on button press
   mixer = new THREE.AnimationMixer(gltf.scene);
   funcAction = () => {
-    for (var i = 2; i < 29; ++i) {
+    for (var i = 3; i < 26; ++i) {
       (gltf.scene.children[i] as THREE.Mesh).material = !pushed ? redMaterial : material; 
     }
     pushed = !pushed;
