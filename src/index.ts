@@ -7,9 +7,11 @@
 import * as ZapparThree from '@zappar/zappar-threejs';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import model from '../assets/waving.glb';
+import model from '../assets/girland.glb';
 import target from '../assets/example-tracking-image.zpt';
 import './index.sass';
+import { Vector3 } from 'three';
+import { Event1 } from '@zappar/zappar';
 
 // The SDK is supported on many different browsers, but there are some that
 // don't provide camera access. This function detects if the browser is supported
@@ -78,21 +80,46 @@ scene.add(imageTrackerGroup);
 
 let action: THREE.AnimationAction;
 let mixer: THREE.AnimationMixer;
-
+let pushed = false;
+let funcAction = () => {};
+imageTrackerGroup
 // Load a 3D model to place within our group (using ThreeJS's GLTF loader)
 const gltfLoader = new GLTFLoader(manager);
 gltfLoader.load(model, (gltf) => {
+  const material = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    emissive: 0.2
+  });
+  const redMaterial = new THREE.MeshStandardMaterial({
+    color: 0xFF0C14
+  })
+  gltf.scene.visible = false;
+  for (var i = 2; i < 29; ++i) {
+    (gltf.scene.children[i] as THREE.Mesh).material = material;
+  }
+  const a = new Event1<ZapparThree.ImageAnchor>();
+  a.bind(() => {
+    gltf.scene.visible = true;
+  })
+  const b = new Event1<ZapparThree.ImageAnchor>();
+  b.bind(() => {
+    gltf.scene.visible = false;
+  })
+  imageTracker.onVisible = a;
+  imageTracker.onNotVisible = b;
   // get the animation and re-declare mixer and action.
   // which will then be triggered on button press
   mixer = new THREE.AnimationMixer(gltf.scene);
-  action = mixer.clipAction(gltf.animations[0]);
-
+  funcAction = () => {
+    for (var i = 2; i < 29; ++i) {
+      (gltf.scene.children[i] as THREE.Mesh).material = !pushed ? redMaterial : material; 
+    }
+    pushed = !pushed;
+  }
   // Now the model has been loaded, we can roate it and add it to our image_tracker_group
-  imageTrackerGroup.add(gltf.scene.rotateX(Math.PI / 2));
+  imageTrackerGroup.add(gltf.scene.rotateY(Math.PI / 2));
 }, undefined, () => {
-  console.log('An error ocurred loading the GLTF model');
 });
-
 // Light up our scene with an ambient light
 imageTrackerGroup.add(new THREE.AmbientLight(0xffffff));
 
@@ -102,7 +129,9 @@ const button = document.createElement('div');
 button.setAttribute('class', 'circle');
 
 // On click, play the gltf's action
-button.onclick = () => { action.play(); };
+button.onclick = () => { 
+  funcAction();
+};
 
 // Append the button to our document's body
 document.body.appendChild(button);
